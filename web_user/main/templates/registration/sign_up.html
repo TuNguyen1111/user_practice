@@ -2,7 +2,7 @@
 {% block title %} Sign up {% endblock %}
 {% load crispy_forms_tags %}
 {% block content %}
-    <form action="">
+    <form action="" method="post">
         {% csrf_token %}
         {{ form|crispy }}
         <p>
