@@ -1,6 +1,7 @@
+from pickle import TRUE
 from django.shortcuts import render, redirect, HttpResponse
 from django.contrib.auth import login
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required, permission_required
 
 from .forms import RegistrationForm, PostForm
 from .models import Post
@@ -14,7 +15,8 @@ def home(request):
     if request.method == 'POST':
         post_id = request.POST.get('post-id')
         post = Post.objects.filter(id=post_id).first()
-        if post and post.author == request.user:
+        has_permisstion_delete_post = post.author == request.user or request.user.has_perm('main.delete_post')
+        if has_permisstion_delete_post:
             post.delete()
 
     context = {
@@ -37,6 +39,7 @@ def sign_up(request):
     }
     return render(request, 'registration/sign_up.html', context)
 
+@permission_required('main.add_post', login_url='/login', raise_exception=True)
 @login_required(login_url='/login')
 def create_post(request):
     if request.method == 'POST':
