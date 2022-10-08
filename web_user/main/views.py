@@ -3,12 +3,24 @@ from django.contrib.auth import login
 from django.contrib.auth.decorators import login_required
 
 from .forms import RegistrationForm, PostForm
+from .models import Post
 
 # Create your views here.
 
 @login_required(login_url='/login')
 def home(request):
-    return render(request, 'main/home.html')
+    posts = Post.objects.all()
+
+    if request.method == 'POST':
+        post_id = request.POST.get('post-id')
+        post = Post.objects.filter(id=post_id).first()
+        if post and post.author == request.user:
+            post.delete()
+
+    context = {
+        'posts': posts
+    }
+    return render(request, 'main/home.html', context)
 
 def sign_up(request):
     if request.method == 'POST':
