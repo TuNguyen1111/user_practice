@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect, HttpResponse
 from django.contrib.auth import login
 from django.contrib.auth.decorators import login_required
 
-from .forms import RegistrationForm
+from .forms import RegistrationForm, PostForm
 
 # Create your views here.
 
@@ -24,3 +24,20 @@ def sign_up(request):
         'form': form,
     }
     return render(request, 'registration/sign_up.html', context)
+
+@login_required(login_url='/login')
+def create_post(request):
+    if request.method == 'POST':
+        form = PostForm(request.POST)
+        if form.is_valid():
+            post = form.save(commit=False)
+            post.author = request.user
+            post.save()
+            return redirect('/home')
+    else:
+        form = PostForm()
+
+    context = {
+        'form': form,
+    }
+    return render(request, 'main/create_post.html', context)
