@@ -1,11 +1,12 @@
 from django.shortcuts import render, redirect, HttpResponse
 from django.contrib.auth import login
+from django.contrib.auth.decorators import login_required
 
 from .forms import RegistrationForm
 
 # Create your views here.
 
-
+@login_required(login_url='/login')
 def home(request):
     return render(request, 'main/home.html')
 
